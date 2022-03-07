@@ -5,19 +5,19 @@ import frc.robot.subsystems.Shooter;
 
 public class RunShooter extends CommandBase{
 
-    private Shooter m_shooter;
+    private Shooter m_Shooter;
 
     public RunShooter(Shooter m_shooter){
-        this.m_shooter = m_shooter;
+        this.m_Shooter = m_shooter;
         addRequirements(m_shooter);
     }
 
     public void initialize(){
-        m_shooter.resetPID();
+        m_Shooter.resetPID();
     }
 
     public void execute(){
-        m_shooter.enable();
+        m_Shooter.enable();
     }
 
 
@@ -26,7 +26,7 @@ public class RunShooter extends CommandBase{
     }
 
     public void end(boolean interrupted){
-        m_shooter.stop();
+        m_Shooter.stop();
     }
     
 }

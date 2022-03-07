@@ -3,16 +3,15 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.driving.*;
 import frc.robot.commands.intaking.*;
 import frc.robot.commands.shooting.*;
-import frc.robot.commands.ClimbDown;
-import frc.robot.commands.ClimbUp;
 import frc.robot.commands.auto.*;
+import frc.robot.commands.climbing.ClimbDown;
+import frc.robot.commands.climbing.ClimbUp;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
@@ -32,21 +31,20 @@ public class RobotContainer {
 
             deployIntake,
             retractIntake,
-            toggleDeployer,
 
             toggleGoal,
-            initFiring,
             fireBall,
 
+            primeIndex,
+
             runShooter,
-            
-            spitBall,
-            
+
             moveFromTarmac,
-            
+
             climbUp,
             climbDown,
-            
+
+            spitBall,
             indexBall,
             scanIntaking;
 
@@ -54,6 +52,7 @@ public class RobotContainer {
 
     private JoystickButton Ltrigger,
             Rtrigger,
+            button7,
 
             toggle,
             green,
@@ -62,7 +61,6 @@ public class RobotContainer {
             yellow,
             blue;
 
-    private Trigger spit;
 
     public RobotContainer() {
         m_leftJoystick = new Joystick(Constants.LeftJoyStick);
@@ -81,82 +79,147 @@ public class RobotContainer {
         configureButtons();
     }
 
+    public void basedTeleOpCommands() {
+        getArcadeDrive().schedule();
 
+        Trigger manualControlTrigger = toggle.negate();
 
+        // Commands
+        // ------
+        indexBall = new IndexBall(m_Index);
+        spitBall = new SpitBall(m_Index, m_Shooter);
+
+        runIntake = new RunIntake(m_Intake);
+
+        deployIntake = new DeployIntake(m_Deployer);
+        retractIntake = new RetractIntake(m_Deployer);
+
+        runShooter = new RunShooter(m_Shooter);
+        primeIndex = new PrimeIndex(m_Index);
+
+        fireBall = new Fireball(m_Index);
+
+        runIndex = new RunIndex(m_Index);
+
+        toggleGoal = new ToggleGoal(m_Shooter);
+
+        climbUp = new ClimbUp(m_Climber);
+        climbDown = new ClimbDown(m_Climber);
+        // ------
+
+        // Deploy/Retract intake with blue button
+        // ------
+        Trigger deployedStateTrigger = new Trigger(() -> m_Deployer.isDeployed());
+
+        black.and(deployedStateTrigger).whenActive(retractIntake);
+        black.and(deployedStateTrigger.negate()).whenActive(deployIntake);
+        // ------
+
+        // Index and Spit ball triggers
+        // ------
+        Trigger indexBallTrigger = new Trigger(Index.indexBall);
+        Trigger spitBalltrigger = new Trigger(Index.spitBall);
+
+        indexBall.andThen(scanIntaking);
+        spitBall.andThen(scanIntaking);
+
+        indexBallTrigger.and(manualControlTrigger.negate()).whenActive(indexBall);
+        spitBalltrigger.and(manualControlTrigger.negate()).whenActive(spitBall);
+        // ------
+
+        // Run intake and scan for balls to index by holding down trigger
+        // ------
+        Rtrigger.negate().cancelWhenActive(scanIntaking);
+        Rtrigger.whenHeld(runIntake).cancelWhenActive(runShooter);
+        Rtrigger.and(manualControlTrigger).negate().whileActiveOnce(scanIntaking);
+        // ------
+
+        // Start the shooter with green button
+        // prime the index before every shooter use
+        // ------
+        runShooter.beforeStarting(primeIndex);
+        Rtrigger.negate().and(green).toggleWhenActive(runShooter);
+        // ------
+
+        // ------
+        manualControlTrigger.negate().and(red).whenActive(fireBall);
+        // ------
+
+        /**
+         * Manual Control Bindings
+         */
+        button7.whenPressed(toggleGoal);
+
+        blue.whenPressed(climbUp);
+        yellow.whenPressed(climbDown);
+        red.and(manualControlTrigger).whileActiveOnce(runIndex);
+
+    }
 
     public void teleOpCommands() {
         getArcadeDrive().schedule();
 
-        
+        // //Black : Toggle Goal
+        // //------
+        // toggleGoal = new ToggleGoal(m_Shooter);
+        // //black.whenPressed(toggleGoal);
+        // //------
 
-        //Black : Toggle Goal
-        //------
-        toggleGoal = new ToggleGoal(m_Shooter);
-        //black.whenPressed(toggleGoal);
-        //------
+        // //Blue : Toggle Deployer
+        // //------
+        // Trigger deployed = new Trigger(() -> m_Deployer.isDeployed());
+        // deployIntake = new DeployIntake(m_Deployer);
+        // retractIntake = new RetractIntake(m_Deployer);
+        // deployed.and(blue).whenActive(retractIntake);
+        // deployed.negate().and(blue).whenActive(deployIntake);
+        // //------
 
-        //Blue : Toggle Deployer
-        //------
-        Trigger deployed =  new Trigger(() -> m_Deployer.getDeployState());
-        deployIntake = new DeployIntake(m_Deployer);
-        retractIntake = new RetractIntake(m_Deployer);
-        
-        //toggleDeployer = new ToggleDeployer(m_Deployer);
-        deployed.and(blue).whenActive(retractIntake);
-        deployed.negate().and(blue).whenActive(deployIntake);
-        //------
+        // //Green : init Firing
+        // //------
+        // //initFiring = new InitFiring(m_Index);
+        // runShooter = new RunShooter(m_Shooter);
+        // //initFiring.andThen(runShooter);
+        // green.toggleWhenPressed(runShooter);
+        // //------
 
-        //Green : init Firing
-        //------
-        //initFiring = new InitFiring(m_Index);
-        runShooter = new RunShooter(m_Shooter);
-        //initFiring.andThen(runShooter);
-        green.toggleWhenPressed(runShooter);
-        //------
+        // //Red : Fire Ball
+        // //------
+        // fireBall = new Fireball(m_Index);
+        // red.whenPressed(fireBall);
 
-        //Red : Fire Ball
-        //------
-        fireBall = new Fireball(m_Index);
-        red.whenPressed(fireBall);
+        // //------
 
-        //------
+        // //Shooter Spit Trigger
+        // //------
+        // spitBall = new SpitBall(m_Shooter);
+        // spit = new Trigger(() -> GlobalCommandControl.spit());
+        // spit.whenActive(spitBall);
+        // //------
 
-        //Shooter Spit Trigger
-        //------
-        spitBall = new SpitBall(m_Shooter);
-        spit = new Trigger(() -> GlobalCommandControl.spit());
-        spit.whenActive(spitBall);
-        //------
+        // //Trigger : Run Intake/Index
+        // //------
+        // runIntake = new RunIntake(m_Intake);
+        // scanIntaking = new ScanIntaking(m_Index);
+        // indexBall = new IndexBall(m_Index);
+        // runIndex = new RunIndex(m_Index);
+        // // Rtrigger.cancelWhenPressed(initFiring).whenHeld(runIntake);
+        // Rtrigger.cancelWhenPressed(runShooter).whenHeld(runIndex).whenHeld(runIntake);
+        // //------
 
+        // climbUp = new ClimbUp(m_Climber);
+        // climbDown = new ClimbDown(m_Climber);
 
-        //Trigger : Run Intake/Index
-        //------
-        runIntake = new RunIntake(m_Intake);
-        scanIntaking = new ScanIntaking(m_Index);
-        indexBall = new IndexBall(m_Index);
-        runIndex = new RunIndex(m_Index);
-       // Rtrigger.cancelWhenPressed(initFiring).whenHeld(runIntake);
-       Rtrigger.cancelWhenPressed(runShooter).whenHeld(runIndex).whenHeld(runIntake); 
-       //------
+        // yellow.whenHeld(climbUp);
+        // black.whenHeld(climbDown);
 
-        climbUp = new ClimbUp(m_Climber);
-        climbDown = new ClimbDown(m_Climber);
-
-        yellow.whenHeld(climbUp);
-        black.whenHeld(climbDown);
-        
-        
     }
 
-    public SequentialCommandGroup simpleAuto(){
+    public SequentialCommandGroup simpleAuto() {
         moveFromTarmac = new MoveFromTarmac(m_DriveTrain);
         deployIntake = new DeployIntake(m_Deployer);
 
         return new SequentialCommandGroup(moveFromTarmac, deployIntake);
     }
-
-
-
 
     public Command getArcadeDrive() {
         arcadeDrive = new ArcadeDrive(m_DriveTrain,
@@ -166,14 +229,13 @@ public class RobotContainer {
 
     }
 
-    public Command getTankDrive(){
+    public Command getTankDrive() {
         tankDrive = new TankDrive(m_DriveTrain,
-        () -> getLeftYAdjusted(), 
-        () -> getRightYAdjusted());
-    
-        return tankDrive;
-      }
+                () -> getLeftYAdjusted(),
+                () -> getRightYAdjusted());
 
+        return tankDrive;
+    }
 
     public double getLeftYAdjusted() {
         return -getLeftY() * getSensitvity();
@@ -221,6 +283,8 @@ public class RobotContainer {
     public void configureButtons() {
         Ltrigger = new JoystickButton(m_leftJoystick, 1);
         Rtrigger = new JoystickButton(m_rightJoystick, 1);
+
+        button7 = new JoystickButton(m_leftJoystick, 7);
 
         toggle = new JoystickButton(buttonBox, 1);
         green = new JoystickButton(buttonBox, 2);

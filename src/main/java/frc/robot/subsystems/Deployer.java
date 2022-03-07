@@ -17,6 +17,8 @@ public class Deployer extends SubsystemBase {
     private DigitalInput intakeLimitSwitch = new DigitalInput(Constants.DeployerLimitSwitch);
 
     private final boolean flipDeployer = false;
+
+    private boolean deployState = false;
             
     public Deployer() {
         deployer.setInverted(flipDeployer);
@@ -24,54 +26,14 @@ public class Deployer extends SubsystemBase {
         
     }
 
-
-
-
-    public void toggle(){
-        if(intakeLimitSwitch.get()){
-            retractIntake();
-        }else{
-            deployIntake();
-        }
+    public void setDeployState(boolean state){
+        deployState = state;
     }
 
-
-
-    public void deployIntake() {
-
-
-        // new Thread(() ->{
-
-        // if(!intakeLimitSwitch.get()){
-        //     Timer time = new Timer();
-        //     time.start();
-        //     while(time.get() < 3){
-        //         setDeployerSpeed(0.18);
-        //     }
-        //     stopDeployer();
-        //     time.stop();
-        //     time = null;
-        // }}).start();
-
+    public boolean isDeployed(){
+        return deployState;
     }
 
-    public void retractIntake() {
-        new Thread(() ->{
-
-            Timer time = new Timer();
-            time.start();
-            while(time.get() < 1){
-                setDeployerSpeed(-0.3);
-            }
-            stopDeployer();
-            time.stop();
-            time = null;
-        }).start();
-    }
-
-    public boolean getDeployState(){
-        return intakeLimitSwitch.get();
-    }
     
     public void setDeployerSpeed(double speed) {
         deployer.set(speed);

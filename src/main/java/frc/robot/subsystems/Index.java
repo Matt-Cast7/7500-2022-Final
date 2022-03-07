@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -84,124 +86,60 @@ public class Index extends SubsystemBase {
         leftMotor.set(0);
     }
 
-    public void     enableIndex() {
+    public void enableIndex() {
         setIndex(0.25);
 
     }
 
-    public Thread TTenableIndex() {
-        Thread t = new Thread(() -> {
-            if (!(detectFrontIndexBalls() == Ball.NONE)) {
+    public static BooleanSupplier indexBall = () -> {
+        return false;
+    };
 
-                if (detectFrontIndexBalls() == AllianceColor) {
-                    if (detectBackIndexBalls() == Ball.NONE) {
-                        while (detectBackIndexBalls() == Ball.NONE) {
-                            setIndex(0.25);
-                        }
-                        setIndex(0);
+    public void indexBall(boolean index){
+        indexBall = () -> {
+            return index;
+        };
+    }
+    
 
-                    } else {
-                        while (detectFrontIndexBalls() != Ball.NONE) {
-                            setIndex(0.25);
-                        }
-                        setIndex(0);
 
-                    }
-                } else {
-                    if (detectBackIndexBalls() != Ball.NONE) {
-                        GlobalCommandControl.spitCommand = true;
-                        setIndex(0.25);
-                        while(!shooterEntry.get()){
+    public static BooleanSupplier spitBall = () -> {
+        return false;
+    };
 
-                        }
-                        stop();
-                        GlobalCommandControl.spitCommand = false;
-                    } else {
-                        MotorDirections.FlipIntake = true;
-                        
-                        Timer timer = new Timer();
-                        timer.start();
-
-                        while(timer.get() < 1.5){
-
-                        }
-
-                        MotorDirections.FlipIntake = false;
-
-                    }
-
-                }
-
-            }
-
-        });
-
-        return t;
+    public void spitBall(boolean spit){
+        indexBall = () -> {
+            return spit;
+        };
     }
 
-
-    public Thread initFiring(){
-        Thread t = new Thread( () -> {
-
-            Timer timer = new Timer();
-            timer.start();
-
-
-            setIndex(0.25);
-            while(timer.get() < 1.0){
-
-            }
-            stop();
-            
-            
-            timer.stop();
-
-            setIndex(-0.1);
-            while(frontIndexColorSensor.getProximity() < 65){
-
-            }
-            stop();
-
-
-
-
-        });
-
-        return t;
+    public boolean getShooterEntry(){
+        return shooterEntry.get();
     }
 
-    public Thread fireBall(){
-        Thread t = new Thread( () -> {
-            
-            setIndex(0.25);
-            while(!shooterEntry.get()){
-
-            }
-            stop();
-            
-            Timer timer = new Timer();
-            timer.start();
-            while(timer.get() < 0.5){
-
-            }
-            timer.stop();
-
-            setIndex(0.25);
-            while(!shooterEntry.get()){
-
-            }
-            stop();
-
-        });
-
-        return t;
+    public double getFrontProximity(){
+        return frontIndexColorSensor.getProximity();
     }
 
-    public double backProximity(){
+    public double getBackProximity(){
         return backIndexColorSensor.getProximity();
     }
 
+    public boolean ballInBack(){
+        if(detectBackIndexBalls() != Ball.NONE){
+            return true;
+        }else{
+            return false;
+        }
+    }
     
+    public boolean ballInFront(){
+        if(detectFrontIndexBalls() != Ball.NONE){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     public Ball detectBackIndexBalls() {
         ColorMatchResult match = colorMatcher.matchClosestColor(backIndexColorSensor.getColor());
@@ -250,3 +188,111 @@ public class Index extends SubsystemBase {
     }
 
 }
+
+// public Thread TTenableIndex() {
+    //     Thread t = new Thread(() -> {
+    //         if (!(detectFrontIndexBalls() == Ball.NONE)) {
+
+    //             if (detectFrontIndexBalls() == AllianceColor) {
+    //                 if (detectBackIndexBalls() == Ball.NONE) {
+    //                     while (detectBackIndexBalls() == Ball.NONE) {
+    //                         setIndex(0.25);
+    //                     }
+    //                     setIndex(0);
+
+    //                 } else {
+    //                     while (detectFrontIndexBalls() != Ball.NONE) {
+    //                         setIndex(0.25);
+    //                     }
+    //                     setIndex(0);
+
+    //                 }
+    //             } else {
+    //                 if (detectBackIndexBalls() != Ball.NONE) {
+    //                     GlobalCommandControl.spitCommand = true;
+    //                     setIndex(0.25);
+    //                     while(!shooterEntry.get()){
+
+    //                     }
+    //                     stop();
+    //                     GlobalCommandControl.spitCommand = false;
+    //                 } else {
+    //                     MotorDirections.FlipIntake = true;
+                        
+    //                     Timer timer = new Timer();
+    //                     timer.start();
+
+    //                     while(timer.get() < 1.5){
+
+    //                     }
+
+    //                     MotorDirections.FlipIntake = false;
+
+    //                 }
+
+    //             }
+
+    //         }
+
+    //     });
+
+    //     return t;
+    // }
+
+
+    // public Thread initFiring(){
+    //     Thread t = new Thread( () -> {
+
+    //         Timer timer = new Timer();
+    //         timer.start();
+
+
+    //         setIndex(0.25);
+    //         while(timer.get() < 1.0){
+
+    //         }
+    //         stop();
+            
+            
+    //         timer.stop();
+
+    //         setIndex(-0.1);
+    //         while(frontIndexColorSensor.getProximity() < 65){
+
+    //         }
+    //         stop();
+
+
+
+
+    //     });
+
+    //     return t;
+    // }
+
+    // public Thread fireBall(){
+    //     Thread t = new Thread( () -> {
+            
+    //         setIndex(0.25);
+    //         while(!shooterEntry.get()){
+
+    //         }
+    //         stop();
+            
+    //         Timer timer = new Timer();
+    //         timer.start();
+    //         while(timer.get() < 0.5){
+
+    //         }
+    //         timer.stop();
+
+    //         setIndex(0.25);
+    //         while(!shooterEntry.get()){
+
+    //         }
+    //         stop();
+
+    //     });
+
+    //     return t;
+    // }
