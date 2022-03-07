@@ -8,6 +8,7 @@ public class ClimbUp extends CommandBase{
     private Climber m_Climber;
 
     public ClimbUp(Climber m_Climber){
+        addRequirements(m_Climber);
         this.m_Climber = m_Climber;
     }
 

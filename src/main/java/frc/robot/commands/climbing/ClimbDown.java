@@ -9,6 +9,7 @@ public class ClimbDown extends CommandBase{
 
     public ClimbDown(Climber m_Climber){
         this.m_Climber = m_Climber;
+        addRequirements(m_Climber);
     }
 
     public void execute(){

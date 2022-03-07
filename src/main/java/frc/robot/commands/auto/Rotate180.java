@@ -9,6 +9,7 @@ public class Rotate180 extends CommandBase{
 
     public Rotate180(DriveTrain m_DriveTrain){
         this.m_DriveTrain = m_DriveTrain;
+        addRequirements(m_DriveTrain);
     }
 
     public void execute(){

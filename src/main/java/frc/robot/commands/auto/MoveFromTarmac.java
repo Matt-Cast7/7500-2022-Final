@@ -9,7 +9,7 @@ public class MoveFromTarmac extends CommandBase{
 
     public MoveFromTarmac(DriveTrain m_DriveTrain){
         this.m_DriveTrain = m_DriveTrain;
-
+        addRequirements(m_DriveTrain);
     }
 
     public void execute(){
