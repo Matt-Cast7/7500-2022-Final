@@ -17,6 +17,8 @@ public class Robot extends TimedRobot {
 
     camera = new Camera();
 
+    Gyro gyro = new Gyro();
+
     camera.init();
     camera.start();
     
@@ -44,6 +46,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.teleOpCommands();
   }
 
   @Override

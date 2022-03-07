@@ -13,6 +13,10 @@ public final class Constants {
 
     public static final double DriveTrainWheelRadius = 3.0;
     public static final double DriveTrainGearRatio = 10.71;
+
+    public static final double turnkP = 0.03;
+    public static final double turnkI = 0.00;
+    public static final double turnkD = 0.00;
     //------
 
     
@@ -48,8 +52,8 @@ public final class Constants {
 
     //Climber
     //------
-    public static final int leftClimber = 14;
-    public static final int rightClimber = 15;
+    public static final int leftClimber = 17;
+    public static final int rightClimber = 18;
 
     public static final double stringLength = 24;
     public static final double climberGearRatio = 1.0/20.0;

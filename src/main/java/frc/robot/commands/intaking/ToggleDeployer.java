@@ -17,11 +17,11 @@ public class ToggleDeployer extends CommandBase{
     }
     
 
-    public boolean isFinihsed(){
+    public boolean isFinished(){
         return true;
     }
 
     public void end(){
-        m_deployer.stopDeployer();
+        //m_deployer.stopDeployer();
     }
 }

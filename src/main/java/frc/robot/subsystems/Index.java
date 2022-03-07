@@ -37,7 +37,7 @@ public class Index extends SubsystemBase {
     // private final Ball AllianceColor = (DriverStation.getAlliance() ==
     // DriverStation.Alliance.Red) ? Ball.RED : Ball.BLUE;
 
-    private final Ball AllianceColor = Ball.RED;
+    public final Ball AllianceColor = Ball.RED;
 
     public enum Ball {
         RED,
@@ -84,7 +84,7 @@ public class Index extends SubsystemBase {
         leftMotor.set(0);
     }
 
-    public void enableIndex() {
+    public void     enableIndex() {
         setIndex(0.25);
 
     }
@@ -195,6 +195,10 @@ public class Index extends SubsystemBase {
         });
 
         return t;
+    }
+
+    public double backProximity(){
+        return backIndexColorSensor.getProximity();
     }
 
     

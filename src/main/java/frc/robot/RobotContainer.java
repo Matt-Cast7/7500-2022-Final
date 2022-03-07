@@ -7,10 +7,12 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.*;
 import frc.robot.commands.driving.*;
 import frc.robot.commands.intaking.*;
 import frc.robot.commands.shooting.*;
+import frc.robot.commands.ClimbDown;
+import frc.robot.commands.ClimbUp;
+import frc.robot.commands.auto.*;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
@@ -20,7 +22,7 @@ public class RobotContainer {
     private Intake m_Intake;
     private Deployer m_Deployer;
     private Shooter m_Shooter;
-    // private Climber m_Climber;
+    private Climber m_Climber;
 
     private Command tankDrive,
             arcadeDrive,
@@ -28,6 +30,8 @@ public class RobotContainer {
             runIntake,
             runIndex,
 
+            deployIntake,
+            retractIntake,
             toggleDeployer,
 
             toggleGoal,
@@ -36,7 +40,15 @@ public class RobotContainer {
 
             runShooter,
             
-            spitBall;
+            spitBall,
+            
+            moveFromTarmac,
+            
+            climbUp,
+            climbDown,
+            
+            indexBall,
+            scanIntaking;
 
     private Joystick m_leftJoystick, m_rightJoystick, buttonBox;
 
@@ -64,6 +76,7 @@ public class RobotContainer {
         m_Index = new Index();
         m_Shooter = new Shooter();
         m_Deployer = new Deployer();
+        m_Climber = new Climber();
 
         configureButtons();
     }
@@ -72,37 +85,74 @@ public class RobotContainer {
 
 
     public void teleOpCommands() {
-        //getArcadeDrive().schedule();
+        getArcadeDrive().schedule();
 
-        //Trigger : Run Intake/Index
-        runIntake = new RunIntake(m_Intake);
-        runIndex = new RunIndex(m_Index);
-        Rtrigger.cancelWhenPressed(initFiring).whenHeld(new ParallelCommandGroup(runIntake, runIndex));
+        
 
         //Black : Toggle Goal
+        //------
         toggleGoal = new ToggleGoal(m_Shooter);
-        black.whenPressed(toggleGoal);
+        //black.whenPressed(toggleGoal);
+        //------
 
         //Blue : Toggle Deployer
-        toggleDeployer = new ToggleDeployer(m_Deployer);
-        blue.whenPressed(toggleDeployer);
+        //------
+        Trigger deployed =  new Trigger(() -> m_Deployer.getDeployState());
+        deployIntake = new DeployIntake(m_Deployer);
+        retractIntake = new RetractIntake(m_Deployer);
+        
+        //toggleDeployer = new ToggleDeployer(m_Deployer);
+        deployed.and(blue).whenActive(retractIntake);
+        deployed.negate().and(blue).whenActive(deployIntake);
+        //------
 
         //Green : init Firing
-        initFiring = new InitFiring(m_Index);
+        //------
+        //initFiring = new InitFiring(m_Index);
         runShooter = new RunShooter(m_Shooter);
-        initFiring.andThen(runShooter);
-        green.whenPressed(initFiring);
+        //initFiring.andThen(runShooter);
+        green.toggleWhenPressed(runShooter);
+        //------
 
         //Red : Fire Ball
+        //------
         fireBall = new Fireball(m_Index);
         red.whenPressed(fireBall);
 
+        //------
+
         //Shooter Spit Trigger
+        //------
         spitBall = new SpitBall(m_Shooter);
         spit = new Trigger(() -> GlobalCommandControl.spit());
         spit.whenActive(spitBall);
+        //------
+
+
+        //Trigger : Run Intake/Index
+        //------
+        runIntake = new RunIntake(m_Intake);
+        scanIntaking = new ScanIntaking(m_Index);
+        indexBall = new IndexBall(m_Index);
+        runIndex = new RunIndex(m_Index);
+       // Rtrigger.cancelWhenPressed(initFiring).whenHeld(runIntake);
+       Rtrigger.cancelWhenPressed(runShooter).whenHeld(runIndex).whenHeld(runIntake); 
+       //------
+
+        climbUp = new ClimbUp(m_Climber);
+        climbDown = new ClimbDown(m_Climber);
+
+        yellow.whenHeld(climbUp);
+        black.whenHeld(climbDown);
         
         
+    }
+
+    public SequentialCommandGroup simpleAuto(){
+        moveFromTarmac = new MoveFromTarmac(m_DriveTrain);
+        deployIntake = new DeployIntake(m_Deployer);
+
+        return new SequentialCommandGroup(moveFromTarmac, deployIntake);
     }
 
 

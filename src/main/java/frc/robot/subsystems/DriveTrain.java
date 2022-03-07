@@ -4,9 +4,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Gyro;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -24,7 +27,12 @@ public class DriveTrain extends SubsystemBase {
     private RelativeEncoder m_leftEncoder = leftMaster.getEncoder();
     private RelativeEncoder m_rightEncoder = rightMaster.getEncoder();
 
+
+    private Gyro gyro = new Gyro();
+
     public DriveTrain() {
+
+        
 
         leftMaster.setInverted(lFlip);
         leftSlave.setInverted(lFlip);
@@ -94,6 +102,26 @@ public class DriveTrain extends SubsystemBase {
 
         set(0, 0);
 
+    }
+
+
+    public void turnTo(double angle, double power){
+        gyro.reset();
+
+        if(angle < 0){
+            set(power, -power);
+            while(gyro.getAngle() > angle){
+
+            }
+            set(0);
+        }else{
+            set(-power, power);
+            while(gyro.getAngle() < angle){
+
+            }
+            set(0);
+        }
+    
     }
 
     public double getLeftDistanceTraveled() {

@@ -38,18 +38,20 @@ public class Deployer extends SubsystemBase {
 
 
     public void deployIntake() {
-        new Thread(() ->{
 
-        if(!intakeLimitSwitch.get()){
-            Timer time = new Timer();
-            time.start();
-            while(time.get() < 3){
-                setDeployerSpeed(0.18);
-            }
-            stopDeployer();
-            time.stop();
-            time = null;
-        }}).start();
+
+        // new Thread(() ->{
+
+        // if(!intakeLimitSwitch.get()){
+        //     Timer time = new Timer();
+        //     time.start();
+        //     while(time.get() < 3){
+        //         setDeployerSpeed(0.18);
+        //     }
+        //     stopDeployer();
+        //     time.stop();
+        //     time = null;
+        // }}).start();
 
     }
 
@@ -67,6 +69,9 @@ public class Deployer extends SubsystemBase {
         }).start();
     }
 
+    public boolean getDeployState(){
+        return intakeLimitSwitch.get();
+    }
     
     public void setDeployerSpeed(double speed) {
         deployer.set(speed);
