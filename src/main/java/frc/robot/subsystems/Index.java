@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.CANSparkMax;
@@ -40,6 +41,16 @@ public class Index extends SubsystemBase {
     // DriverStation.Alliance.Red) ? Ball.RED : Ball.BLUE;
 
     public final Ball AllianceColor = Ball.RED;
+
+    private static ArrayList<Ball> indexedBalls = new ArrayList<Ball>();
+
+    public ArrayList<Ball> getIndexBalls(){
+        return indexedBalls;
+    }
+    public void updateIndexedBalls(Ball ball1, Ball ball2){
+        indexedBalls.set(0, ball1);
+        indexedBalls.set(1, ball2);
+    }
 
     public enum Ball {
         RED,

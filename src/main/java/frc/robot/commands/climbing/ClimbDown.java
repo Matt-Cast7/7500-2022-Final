@@ -12,14 +12,17 @@ public class ClimbDown extends CommandBase{
         addRequirements(m_Climber);
     }
 
+    @Override
     public void execute(){
         m_Climber.setClimber( -0.35, -0.35);
     }
 
+    @Override
     public boolean isFinished(){
         return false;
     }
 
+    @Override
     public void end(boolean interrupted){
         m_Climber.setClimber(0);
     }

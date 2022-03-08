@@ -45,13 +45,10 @@ public class AdjustRange extends CommandBase {
     @Override
     public boolean isFinished() {
         if (cutOffTimer.get() > 4) {
-            cutOffTimer.stop();
-            cutOffTimer.reset();
+            
             return true;
         } else {
             if (Math.abs(track.getDistance()) < 4.0) {
-                cutOffTimer.stop();
-            cutOffTimer.reset();
                 return true;
             } else {
                 return false;
@@ -61,6 +58,8 @@ public class AdjustRange extends CommandBase {
 
     @Override
     public void end(boolean interrupted){
+        cutOffTimer.stop();
+            cutOffTimer.reset();
         m_DriveTrain.set(0);
     }
 

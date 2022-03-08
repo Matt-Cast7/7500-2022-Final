@@ -27,7 +27,7 @@ public class Fireball extends CommandBase{
     
     @Override
     public boolean isFinished(){
-        if(cutOffTimer.get() > 5){
+        if(cutOffTimer.get() > 3){
             cutOffTimer.stop();
             cutOffTimer.reset();
             return true;
