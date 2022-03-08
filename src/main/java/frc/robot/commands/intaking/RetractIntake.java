@@ -32,6 +32,8 @@ public class RetractIntake extends CommandBase{
     public boolean isFinished(){
         if(timer.get() > 1.0){
             m_deployer.setDeployState(false);
+            timer.stop();
+            timer.reset();
             return true;
         }else{
             return false;

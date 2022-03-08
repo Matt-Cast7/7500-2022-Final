@@ -30,6 +30,8 @@ public class PrimeIndex extends CommandBase{
     @Override
     public boolean isFinished(){
         if(cutOffTimer.get() > 1.0){
+            cutOffTimer.stop();
+            cutOffTimer.reset();
             return true;
         }else{
             if(m_Index.getBackProximity() < 60){

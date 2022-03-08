@@ -41,7 +41,7 @@ public class Climber extends SubsystemBase {
     }
 
     public void setClimber(double lPower, double rPower){
-        System.out.println("Climb");
+        
         leftClimber.set(lPower);
         rightClimber.set(rPower);
     }

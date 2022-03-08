@@ -71,6 +71,7 @@ public class Index extends SubsystemBase {
             leftMotor.setInverted(!flipIndex);
             rightMotor.setInverted(flipIndex);
         }
+       //System.out.println(detectBackIndexBalls().toString());
     }
 
 
@@ -87,31 +88,31 @@ public class Index extends SubsystemBase {
     }
 
     public void enableIndex() {
+        
         setIndex(0.25);
 
     }
 
-    public static BooleanSupplier indexBall = () -> {
-        return false;
-    };
+    boolean indexBallBoolean = false;
+    public boolean indexBall(){
+        return indexBallBoolean;
+    }
 
     public void indexBall(boolean index){
-        indexBall = () -> {
-            return index;
-        };
+        indexBallBoolean = index;
     }
     
 
 
-    public static BooleanSupplier spitBall = () -> {
-        return false;
-    };
-
-    public void spitBall(boolean spit){
-        indexBall = () -> {
-            return spit;
-        };
+    boolean spitBallBoolean = false;
+    public boolean spitBall(){
+        return indexBallBoolean;
     }
+
+    public void spitBall(boolean index){
+        spitBallBoolean = index;
+    }
+    
 
     public boolean getShooterEntry(){
         return shooterEntry.get();

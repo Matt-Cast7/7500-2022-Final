@@ -71,6 +71,10 @@ public class SpitBall extends CommandBase{
         m_Shooter.stop();
         m_Index.stop();
         m_Index.spitBall(false);
+        cutOffTimer.stop();
+            cutOffTimer.reset();
+            indexTimer.stop();
+            indexTimer.reset();
     }
 
     

@@ -20,7 +20,6 @@ public class IndexBall extends CommandBase {
     public void initialize() {
      
         cutOffTimer.start();
-     
         if (m_Index.ballInBack()) {
             firstBall = false;
         } else {
@@ -31,22 +30,27 @@ public class IndexBall extends CommandBase {
 
     public void execute() {
         m_Index.setIndex(0.25);
+        System.out.println(m_Index.ballInBack());
     }
 
+    @Override
     public boolean isFinished() {
-        if (cutOffTimer.get() > 8) {
+        if (cutOffTimer.get() > 4) {
             return true;
         }else{
             if (firstBall) {
                 if(m_Index.ballInBack()){
                     return true;
                 }else{
+
                     return false;
                 }
             } else {
                 if(!m_Index.ballInFront()){
+                    
                     return true;
                 }else{
+
                     return false;
                 }
             }
@@ -54,9 +58,12 @@ public class IndexBall extends CommandBase {
 
     }
 
-    public void end() {
+    @Override
+    public void end(boolean interrupted) {
         m_Index.indexBall(false);
         m_Index.setIndex(0);
+        cutOffTimer.stop();
+            cutOffTimer.reset();
     }
 
 }

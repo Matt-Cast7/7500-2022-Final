@@ -30,6 +30,8 @@ public class DeployIntake extends CommandBase{
     public boolean isFinished(){
         if(timer.get() > 3.0){
             m_deployer.setDeployState(true);
+            timer.stop();
+            timer.reset();
             return true;
         }else{
             return false;

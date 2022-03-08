@@ -24,7 +24,7 @@ public class Shooter extends SubsystemBase {
     private boolean flipShooter;
 
     
-    private static boolean targetGoal = true;
+    private boolean targetGoal = true;
     private double targetSpeed = 4500;
 
 
@@ -97,7 +97,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void toggleGoal() {
-        if (targetGoal = true) {
+        if (targetGoal == true) {
             setLowGoal();
         } else {
             setHighGoal();
@@ -107,11 +107,14 @@ public class Shooter extends SubsystemBase {
     public void setHighGoal() {
         targetSpeed = 4500;
         targetGoal = true;
+        System.out.println("High Goal");
     }
 
     public void setLowGoal() {
         targetSpeed = 2100;
         targetGoal = false;
+        System.out.println("Low Goal");
+
     }
 
     public boolean getTargetGoal() {

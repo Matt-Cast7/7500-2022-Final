@@ -15,23 +15,29 @@ public class Fireball extends CommandBase{
         addRequirements(m_Index);
     }
 
+    @Override
     public void initialize(){
         cutOffTimer.start();
     }
 
+    @Override
     public void execute(){
-        m_Index.setIndex(0.45);
+        m_Index.setIndex(0.25);
     }
     
+    @Override
     public boolean isFinished(){
         if(cutOffTimer.get() > 5){
+            cutOffTimer.stop();
+            cutOffTimer.reset();
             return true;
         }else{
             return false;
         }
     }
 
-    public void end(){
+    @Override
+    public void end(boolean interrupted){
         m_Index.stop();
     }
     

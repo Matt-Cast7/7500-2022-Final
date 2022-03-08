@@ -53,6 +53,7 @@ public class RobotContainer {
     private JoystickButton Ltrigger,
             Rtrigger,
             button7,
+            button11,
 
             toggle,
             green,
@@ -79,10 +80,14 @@ public class RobotContainer {
         configureButtons();
     }
 
+    public void testCommands(){
+
+    }
+
     public void basedTeleOpCommands() {
         getArcadeDrive().schedule();
 
-        Trigger manualControlTrigger = toggle.negate();
+        Trigger manualControlTrigger = toggle;
 
         // Commands
         // ------
@@ -105,6 +110,8 @@ public class RobotContainer {
 
         climbUp = new ClimbUp(m_Climber);
         climbDown = new ClimbDown(m_Climber);
+
+        scanIntaking = new ScanIntaking(m_Index);
         // ------
 
         // Deploy/Retract intake with blue button
@@ -117,15 +124,17 @@ public class RobotContainer {
 
         // Index and Spit ball triggers
         // ------
-        Trigger indexBallTrigger = new Trigger(Index.indexBall);
-        Trigger spitBalltrigger = new Trigger(Index.spitBall);
+        Trigger indexBallTrigger = new Trigger(() -> m_Index.indexBall());
+        Trigger spitBalltrigger = new Trigger(() -> m_Index.spitBall());
 
-        indexBall.andThen(scanIntaking);
-        spitBall.andThen(scanIntaking);
+        //indexBall.andThen(scanIntaking);
+        //spitBall.andThen(scanIntaking);
 
-        indexBallTrigger.and(manualControlTrigger.negate()).whenActive(indexBall);
-        spitBalltrigger.and(manualControlTrigger.negate()).whenActive(spitBall);
+        // indexBallTrigger.whenActive(indexBall);
+        // spitBalltrigger.whenActive(spitBall);
         // ------
+
+        scanIntaking.andThen(indexBall);
 
         // Run intake and scan for balls to index by holding down trigger
         // ------
@@ -137,7 +146,7 @@ public class RobotContainer {
         // Start the shooter with green button
         // prime the index before every shooter use
         // ------
-        runShooter.beforeStarting(primeIndex);
+        //runShooter.beforeStarting(primeIndex);
         Rtrigger.negate().and(green).toggleWhenActive(runShooter);
         // ------
 
@@ -150,8 +159,10 @@ public class RobotContainer {
          */
         button7.whenPressed(toggleGoal);
 
-        blue.whenPressed(climbUp);
-        yellow.whenPressed(climbDown);
+        //button11.whenPressed(indexBall);
+
+        blue.whenHeld(climbUp);
+        yellow.whenHeld(climbDown);
         red.and(manualControlTrigger).whileActiveOnce(runIndex);
 
     }
@@ -285,6 +296,8 @@ public class RobotContainer {
         Rtrigger = new JoystickButton(m_rightJoystick, 1);
 
         button7 = new JoystickButton(m_leftJoystick, 7);
+
+        button11 = new JoystickButton(m_leftJoystick, 11);
 
         toggle = new JoystickButton(buttonBox, 1);
         green = new JoystickButton(buttonBox, 2);

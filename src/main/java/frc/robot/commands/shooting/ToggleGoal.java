@@ -15,7 +15,9 @@ public class ToggleGoal extends CommandBase{
         m_Shooter.toggleGoal();
     }
 
-    public boolean isFinihsed(){
+
+    @Override
+    public boolean isFinished(){
         return true;
     }
     

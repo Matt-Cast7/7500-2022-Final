@@ -17,7 +17,7 @@ public class Deployer extends SubsystemBase {
 
     private final boolean flipDeployer = false;
 
-    private boolean deployState = false;
+    private static  boolean deployState = false;
             
     public Deployer() {
         deployer.setInverted(flipDeployer);

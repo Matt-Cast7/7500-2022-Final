@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.teleOpCommands();
+    m_robotContainer.basedTeleOpCommands();
   }
 
   @Override

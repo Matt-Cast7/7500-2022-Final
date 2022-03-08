@@ -16,12 +16,12 @@ public class ScanIntaking extends CommandBase {
 
     @Override
     public void execute() {
-
+        //System.out.println("Scanning");
     }
 
     @Override
     public boolean isFinished() {
-        if (m_Index.detectFrontIndexBalls() != Ball.NONE) {
+        if (m_Index.ballInFront()) {
             ballColor = m_Index.detectFrontIndexBalls();
             return true;
         } else {
@@ -34,17 +34,18 @@ public class ScanIntaking extends CommandBase {
         if (interrupted) {
             m_Index.indexBall(false);
             m_Index.spitBall(false);
-
         } else {
             if (ballColor == m_Index.AllianceColor) {
                 /**
                  * Index Ball
                  */
                 m_Index.indexBall(true);
+
             } else {
                 /**
                  * Spit Ball
                  */
+
                 m_Index.spitBall(true);
             }
         }

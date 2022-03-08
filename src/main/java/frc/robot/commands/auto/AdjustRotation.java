@@ -51,9 +51,13 @@ public class AdjustRotation extends CommandBase {
     @Override
     public boolean isFinished() {
         if (cutOffTimer.get() > 4) {
+            cutOffTimer.stop();
+            cutOffTimer.reset();
             return true;
         } else {
             if (Math.abs(tx.getAsDouble()) < 1.0) {
+                cutOffTimer.stop();
+            cutOffTimer.reset();
                 return true;
             } else {
                 return false;
