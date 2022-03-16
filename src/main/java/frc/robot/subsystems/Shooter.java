@@ -27,6 +27,8 @@ public class Shooter extends SubsystemBase {
     private boolean targetGoal = true;
     private double targetSpeed = 4500;
 
+    private double shooterPower = 65;
+
 
     private NetworkTableEntry wheelSpeed = Shuffleboard.getTab("TeleOp")
             .add("Shooter Wheel RPM", 0)
@@ -64,10 +66,24 @@ public class Shooter extends SubsystemBase {
         pid.reset();
     }
 
+    public void enablae(){
+        shooterMaster.set(0.65);
+        shooterSlave.set(0.65);
+    }
+
     public void enable() {
         // double power = MathUtil.clamp((pid.calculate(wheelSpeed.getDouble(0) +
         // feedforward.calculate(targetSpeed), targetSpeed)), -1, 1);
         double power = MathUtil.clamp((pid.calculate(Math.abs(wheelSpeed.getDouble(0)), targetSpeed)), -1, 1);
+
+        shooterMaster.set(power);
+        shooterSlave.set(power);
+    }
+
+    public void enable(double rpm) {
+        // double power = MathUtil.clamp((pid.calculate(wheelSpeed.getDouble(0) +
+        // feedforward.calculate(targetSpeed), targetSpeed)), -1, 1);
+        double power = MathUtil.clamp((pid.calculate(Math.abs(wheelSpeed.getDouble(0)), rpm)), -1, 1);
 
         shooterMaster.set(power);
         shooterSlave.set(power);
@@ -89,10 +105,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isShooterUptoSpeed() {
-        if ((wheelSpeed.getDouble(0) < (targetSpeed - 50)) && (wheelSpeed.getDouble(0) > (targetSpeed + 50))) {
-            return false;
-        } else {
+        if ((wheelSpeed.getDouble(0) < (targetSpeed - 50)) || (wheelSpeed.getDouble(0) > (targetSpeed + 50))) {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -107,12 +123,15 @@ public class Shooter extends SubsystemBase {
     public void setHighGoal() {
         targetSpeed = 4500;
         targetGoal = true;
+        shooterPower = 65;
+
         System.out.println("High Goal");
     }
 
     public void setLowGoal() {
         targetSpeed = 2100;
         targetGoal = false;
+        shooterPower = 45;
         System.out.println("Low Goal");
 
     }

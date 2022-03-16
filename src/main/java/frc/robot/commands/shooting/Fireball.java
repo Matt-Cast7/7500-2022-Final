@@ -17,6 +17,7 @@ public class Fireball extends CommandBase{
 
     @Override
     public void initialize(){
+        cutOffTimer.reset();
         cutOffTimer.start();
     }
 
@@ -39,6 +40,8 @@ public class Fireball extends CommandBase{
     @Override
     public void end(boolean interrupted){
         m_Index.stop();
+        cutOffTimer.stop();
+            cutOffTimer.reset();
     }
     
 }

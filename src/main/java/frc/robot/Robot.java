@@ -20,6 +20,7 @@ public class Robot extends TimedRobot {
     Gyro gyro = new Gyro();
 
     camera.init();
+    
     camera.start();
     
   }
@@ -39,6 +40,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+
+    m_robotContainer.simpleAuto().schedule();
   }
 
   @Override
@@ -46,7 +49,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.basedTeleOpCommands();
+    CommandScheduler.getInstance().cancelAll();
+    m_robotContainer.teleOpCommands();
   }
 
   @Override

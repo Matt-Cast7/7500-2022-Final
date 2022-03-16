@@ -7,16 +7,16 @@ import frc.robot.subsystems.Deployer;
 public class DeployIntake extends CommandBase{
 
     private Deployer m_deployer;    
-    private Timer timer;
+    private Timer cutOffTimer;
 
     public DeployIntake(Deployer m_deployer){
         this.m_deployer = m_deployer;
-        timer = new Timer();
+        cutOffTimer = new Timer();
         addRequirements(m_deployer);
     }
 
     public void initialize(){
-        timer.start();
+        cutOffTimer.start();
     }
 
     public void execute(){
@@ -28,10 +28,10 @@ public class DeployIntake extends CommandBase{
     }
 
     public boolean isFinished(){
-        if(timer.get() > 3.0){
+        if(cutOffTimer.get() > 1.5){
             m_deployer.setDeployState(true);
-            timer.stop();
-            timer.reset();
+            cutOffTimer.stop();
+            cutOffTimer.reset();
             return true;
         }else{
             return false;

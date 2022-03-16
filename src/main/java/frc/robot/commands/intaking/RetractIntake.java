@@ -7,17 +7,17 @@ import frc.robot.subsystems.Deployer;
 public class RetractIntake extends CommandBase{
 
     private Deployer m_deployer;
-    private Timer timer;
+    private Timer cutOffTimer;
 
     public RetractIntake(Deployer m_deployer){
         this.m_deployer = m_deployer;
-        timer = new Timer();
+        cutOffTimer = new Timer();
 
         addRequirements(m_deployer);
     }
 
     public void initialize(){
-        timer.start();
+        cutOffTimer.start();
     }
 
     public void execute(){
@@ -30,10 +30,10 @@ public class RetractIntake extends CommandBase{
     }
 
     public boolean isFinished(){
-        if(timer.get() > 1.0){
+        if(cutOffTimer.get() > 1.0){
             m_deployer.setDeployState(false);
-            timer.stop();
-            timer.reset();
+            cutOffTimer.stop();
+            cutOffTimer.reset();
             return true;
         }else{
             return false;

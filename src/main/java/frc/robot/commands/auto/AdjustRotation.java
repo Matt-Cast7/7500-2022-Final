@@ -13,7 +13,7 @@ public class AdjustRotation extends CommandBase {
     private Timer cutOffTimer;
     private DoubleSupplier tx;
 
-    private double trackKP = 0.1;
+    private double trackKP = 0.05;
     private double minCommand = 0.1;
 
     public AdjustRotation(DriveTrain m_DriveTrain) {
@@ -33,6 +33,7 @@ public class AdjustRotation extends CommandBase {
     @Override
     public void execute() {
         m_DriveTrain.set(-adjustmentPower(), adjustmentPower());
+        //System.out.println(adjustmentPower());
     }
 
     public double adjustmentPower() {
@@ -54,7 +55,7 @@ public class AdjustRotation extends CommandBase {
             return true;
         } else {
             if (Math.abs(tx.getAsDouble()) < 1.0) {
-                return true;
+                return false;
             } else {
                 return false;
             }

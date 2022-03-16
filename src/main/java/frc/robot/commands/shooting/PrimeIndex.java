@@ -29,12 +29,13 @@ public class PrimeIndex extends CommandBase{
 
     @Override
     public boolean isFinished(){
-        if(cutOffTimer.get() > 1.0){
+        if(cutOffTimer.get() > 2.0){
             cutOffTimer.stop();
             cutOffTimer.reset();
             return true;
         }else{
-            if(m_Index.getBackProximity() < 60){
+            
+            if(m_Index.getBackProximity() < 260){
                 return true;
             }else{
                 return false;

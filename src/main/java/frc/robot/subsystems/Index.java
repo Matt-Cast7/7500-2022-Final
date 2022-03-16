@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
-import java.util.function.BooleanSupplier;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
@@ -12,11 +11,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.GlobalCommandControl;
 import frc.robot.MotorDirections;
 
 public class Index extends SubsystemBase {
@@ -40,7 +37,7 @@ public class Index extends SubsystemBase {
     // private final Ball AllianceColor = (DriverStation.getAlliance() ==
     // DriverStation.Alliance.Red) ? Ball.RED : Ball.BLUE;
 
-    public final Ball AllianceColor = Ball.RED;
+   public final Ball AllianceColor = Ball.RED;
 
     private static ArrayList<Ball> indexedBalls = new ArrayList<Ball>();
 
@@ -83,6 +80,9 @@ public class Index extends SubsystemBase {
             rightMotor.setInverted(flipIndex);
         }
        //System.out.println(detectBackIndexBalls().toString());
+       //backSensorToString();
+       //backSensorToString();
+       //System.out.println(ballInBack());
     }
 
 
@@ -100,7 +100,7 @@ public class Index extends SubsystemBase {
 
     public void enableIndex() {
         
-        setIndex(0.25);
+        setIndex(0.45);
 
     }
 
@@ -175,7 +175,6 @@ public class Index extends SubsystemBase {
             if (match.color == blueBall) {
                 return Ball.BLUE;
             } else if (match.color == redBall) {
-
                 return Ball.RED;
             } else if (match.color == greenBall) {
                 return Ball.GREEN;

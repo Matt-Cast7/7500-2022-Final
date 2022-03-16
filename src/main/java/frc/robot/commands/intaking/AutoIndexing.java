@@ -1,6 +1,8 @@
 package frc.robot.commands.intaking;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Index;
 import frc.robot.subsystems.Shooter;
@@ -17,17 +19,25 @@ public class AutoIndexing extends CommandBase {
     private Ball detectedBall;
     private Ball ballInBack;
 
+    private boolean autoIndexing;
+
     public AutoIndexing(Index m_Index, Shooter m_Shooter) {
         this.m_Index = m_Index;
         this.m_Shooter = m_Shooter;
         cutOffTimer = new Timer();
         indexing = false;
+        autoIndexing = false;
+        Shuffleboard.getTab("TeleOp").addBoolean("AutoIndexing", () -> {
+            return autoIndexing;
+        });
         addRequirements(m_Index, m_Shooter);
     }
 
     @Override
     public void initialize() {
         indexing = false;
+        autoIndexing = true;
+
     }
 
     @Override
@@ -40,9 +50,9 @@ public class AutoIndexing extends CommandBase {
                 ballInBack = m_Index.detectBackIndexBalls();
             }
         } else {
-            if (detectedBall == m_Index.AllianceColor) {
+            if (detectedBall != Ball.NONE) {
                 cutOffTimer.start();
-                indexBall();
+                indexBallAlt2();
 
             } else {
                 //spitBall();
@@ -59,15 +69,23 @@ public class AutoIndexing extends CommandBase {
     public void end(boolean interrupted) {
         m_Index.stop();
         m_Shooter.stop();
+        autoIndexing = true;
+        cutOffTimer.stop();
+            cutOffTimer.reset();
+            indexing = false;
+
     }
 
     public void spitBall() {
-        if(cutOffTimer.get() > 4){
+        if (cutOffTimer.get() > 4) {
             cutOffTimer.stop();
             cutOffTimer.reset();
             indexing = false;
-        }else{
-
+            m_Index.stop();
+            m_Shooter.stop();
+        } else {
+            m_Index.setIndex(0.3);
+            m_Shooter.setShooter(0.2);
         }
     }
 
@@ -101,4 +119,50 @@ public class AutoIndexing extends CommandBase {
         }
     }
 
+    public void indexBallAlt2(){
+        if(cutOffTimer.get() > 4){
+            indexing = false;
+            cutOffTimer.stop();
+            cutOffTimer.reset();
+        }else{
+            m_Index.setIndex(0.20);
+            if((m_Index.getBackProximity() < 400 && m_Index.ballInBack()) && !m_Index.ballInFront()){
+                indexing = false;
+                m_Index.stop();
+            m_Shooter.stop();
+            cutOffTimer.stop();
+            cutOffTimer.reset();
+            }
+        }
+    }
+
+    public void indexBallAlt() {
+        if (cutOffTimer.get() > 4) {
+            cutOffTimer.stop();
+            cutOffTimer.reset();
+            indexing = false;
+        } else {
+            if (ballInBack == Ball.NONE) {
+                m_Index.setIndex(0.20);
+
+                if (!m_Index.ballInFront()) {
+                    cutOffTimer.stop();
+                    cutOffTimer.reset();
+                    indexing = false;
+                    m_Index.stop();
+                }
+
+            } else {
+                m_Index.setIndex(0.25);
+
+                if (m_Index.ballInBack()) {
+                    cutOffTimer.stop();
+                    cutOffTimer.reset();
+                    indexing = false;
+                    m_Index.stop();
+                }
+
+            }
+        }
+    }
 }

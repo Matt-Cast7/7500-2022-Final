@@ -18,6 +18,7 @@ public class RunShooter extends CommandBase{
 
     public void execute(){
         m_Shooter.enable();
+        //System.out.println("aa");
     }
 
 
