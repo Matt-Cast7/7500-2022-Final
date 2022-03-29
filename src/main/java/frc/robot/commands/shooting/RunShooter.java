@@ -17,7 +17,7 @@ public class RunShooter extends CommandBase{
     }
 
     public void execute(){
-        m_Shooter.enable();
+        m_Shooter.enableAutoAdjust();
         //System.out.println("aa");
     }
 

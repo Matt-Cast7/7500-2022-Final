@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -54,13 +55,21 @@ public class RobotContainer {
             autoAim, 
             autoAdjust,
             
-            autoShoot;
+            autoShootBall,
+            autoShoot,
+            
+            runDeployer,
+            
+            autoIndexAdjust,
+            toggleShooter;
 
     private Joystick m_leftJoystick, m_rightJoystick, buttonBox;
 
     private JoystickButton
             Rtrigger,
             Rbutton2,
+            Rbutton5,
+
             Lbutton7,
             Lbutton9,
             Lbutton10,
@@ -92,6 +101,8 @@ public class RobotContainer {
         configureButtons();
 
         manualControlTrigger = toggle.negate();
+
+        
 
         Shuffleboard.getTab("TeleOp").addBoolean("Driving Mode", () -> manualControlTrigger.getAsBoolean());
 
@@ -134,7 +145,18 @@ public class RobotContainer {
 
         spitBall = new SpitBall(m_Index, m_Shooter);
 
+        runDeployer = new RunDeployer(m_Deployer);
 
+        autoIndexAdjust = new AutoIndexAdjust(m_Index);
+        autoShoot = new AutoShoot(m_Index);
+
+        toggleShooter = new ToggleShooter(m_Shooter);
+
+        m_Index.setDefaultCommand(autoIndex);
+
+        //ParallelCommandGroup highGoal = new ParallelCommandGroup(autoAim, new SequentialCommandGroup(autoIndexAdjust, autoShoot), runShooter);
+       // ParallelCommandGroup lowGoal = new ParallelCommandGroup(new SequentialCommandGroup(autoIndexAdjust, autoShoot), runShooter);
+      //  Trigger goal = new Trigger(() -> m_Shooter.getTargetGoal());
         // ------
 
         // Deploy/Retract intake with black button
@@ -145,11 +167,17 @@ public class RobotContainer {
         black.and(deployedStateTrigger.negate()).whenActive(deployIntake);
         // ------
 
-        Rtrigger.whenHeld(runIntake).cancelWhenPressed(runShooter);
+        Rtrigger.whenHeld(runIntake).whenHeld(runDeployer).cancelWhenPressed(runShooter).whenReleased(retractIntake);
 
-        Rbutton2.cancelWhenPressed(arcadeDrive).whenHeld(autoAim).whenReleased(arcadeDrive);
+        //Rbutton2.cancelWhenPressed(arcadeDrive).whenHeld(new SequentialCommandGroup(new ParallelCommandGroup(autoAim, autoIndexAdjust, runShooter), autoShoot)).whenReleased(arcadeDrive).whenReleased(toggleShooter);
+       Rbutton2.cancelWhenPressed(arcadeDrive).whenHeld(new ParallelCommandGroup(autoAim, new SequentialCommandGroup(autoIndexAdjust, autoShoot), runShooter)).whenReleased(arcadeDrive);
+      
+       //Rbutton2.and(goal).cancelWhenActive(arcadeDrive).whileActiveOnce(highGoal).whenInactive(arcadeDrive);
+       //Rbutton2.and(goal).negate().whileActiveOnce(lowGoal);
 
-        Lbutton10.whenPressed(toggleGoal);
+       Rbutton5.whenPressed(toggleGoal);
+
+        Lbutton9.whenPressed(autoIndexAdjust);  
         
         Lbutton11.whenHeld(climbDown);
         Lbutton12.whenHeld(climbUp);
@@ -170,11 +198,11 @@ public class RobotContainer {
 
     public SequentialCommandGroup simpleAuto() {
         moveFromTarmac = new MoveFromTarmac(m_DriveTrain);
-        deployIntake = new DeployIntake(m_Deployer);
+        //deployIntake = new DeployIntake(m_Deployer);
 
-        autoShoot = new AutoShootBall(m_Shooter, m_Index);
+        autoShootBall = new AutoShootBall(m_Shooter, m_Index);
 
-        return new SequentialCommandGroup(moveFromTarmac, deployIntake, autoShoot);
+        return new SequentialCommandGroup(moveFromTarmac, autoShootBall);
     }
 
     public Command getArcadeDrive() {
@@ -239,6 +267,7 @@ public class RobotContainer {
     public void configureButtons() {
         Rtrigger = new JoystickButton(m_rightJoystick, 1);
         Rbutton2 = new JoystickButton(m_rightJoystick, 2);
+        Rbutton5 = new JoystickButton(m_rightJoystick, 5);
 
         Lbutton7 = new JoystickButton(m_leftJoystick, 7);
         Lbutton9 = new JoystickButton(m_leftJoystick, 9);

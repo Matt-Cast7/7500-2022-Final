@@ -29,6 +29,7 @@ public class AutoShootBall extends CommandBase{
         timer.reset();
         cutOffTimer.start();
         timer.start();
+        m_Shooter.resetPID();
     }
 
     @Override

@@ -37,6 +37,9 @@ public final class Constants {
     //------
     public static final int[] Indexer = {9, 10};
     public static final int IndexLimitSwitch = 9;
+
+    public static final double indexGearRatio = 10.0/1.0;
+    public static final double indexRadius = 0.25;
     //------
 
     //Shooter

@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class TrackDistance {
 
-    private NetworkTableEntry a2Entry;
+    private static NetworkTableEntry a2Entry;
+
     
     public TrackDistance() {
 
@@ -15,7 +16,9 @@ public class TrackDistance {
 
     }
 
-    public double getDistance(){
+
+
+    public static double getDistance(){
         double a2 = a2Entry.getDouble(0);
         double a1 = Constants.a1;
         double h1 = Constants.h1;
@@ -24,7 +27,6 @@ public class TrackDistance {
 
         double hDiff = h2 - h1;
         double aSum = a1 + a2;
-
 
         return hDiff / Math.tan(Math.toRadians(aSum));
        

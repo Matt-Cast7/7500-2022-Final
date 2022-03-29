@@ -6,11 +6,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,10 +24,19 @@ public class Index extends SubsystemBase {
     private final CANSparkMax leftMotor = new CANSparkMax(Constants.Indexer[0], MotorType.kBrushless);
     private final CANSparkMax rightMotor = new CANSparkMax(Constants.Indexer[1], MotorType.kBrushless);
 
+    private final RelativeEncoder m_leftEncoder = leftMotor.getEncoder();
+    private final RelativeEncoder m_rightEncoder = rightMotor.getEncoder();
+
+    
+    private static double leftEncoderZero = 0;
+    private static double rightEncoderZero = 0;
+
     private final ColorSensorV3 frontIndexColorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     private final ColorSensorV3 backIndexColorSensor = new ColorSensorV3(I2C.Port.kMXP);
 
     private final DigitalInput shooterEntry = new DigitalInput(Constants.IndexLimitSwitch);
+
+    private final Servo servo = new Servo(0);
 
     private boolean flipIndex;
 
@@ -81,16 +93,40 @@ public class Index extends SubsystemBase {
         }
        //System.out.println(detectBackIndexBalls().toString());
        //backSensorToString();
+       //frontSensorToString();
        //backSensorToString();
        //System.out.println(ballInBack());
+       //System.out.println(servo.get());
     }
 
+    public void closeServo(){
+        servo.set(1);
+    }
+
+
+    public void openServo(){
+        servo.set(0);
+    }
+
+    
 
 
 
     public void setIndex(double speed) {
         rightMotor.set(speed);
         leftMotor.set(speed);
+    }
+    public void setIndex(double lspeed, double rspeed) {
+        rightMotor.set(rspeed);
+        leftMotor.set(lspeed);
+    }
+
+    public void setLeft(double speed){
+        leftMotor.set(speed);
+    }
+
+    public void setRight(double speed){
+        rightMotor.set(speed);
     }
     
     public void stop() {
@@ -156,7 +192,7 @@ public class Index extends SubsystemBase {
     public Ball detectBackIndexBalls() {
         ColorMatchResult match = colorMatcher.matchClosestColor(backIndexColorSensor.getColor());
 
-        if (backIndexColorSensor.getProximity() > 340) {
+        if (backIndexColorSensor.getProximity() > 230) {
             if (match.color == blueBall) {
                 return Ball.BLUE;
             } else if (match.color == redBall) {
@@ -171,7 +207,7 @@ public class Index extends SubsystemBase {
     public Ball detectFrontIndexBalls() {
         ColorMatchResult match = colorMatcher.matchClosestColor(frontIndexColorSensor.getColor());
 
-        if (frontIndexColorSensor.getProximity() > 75) {
+        if (frontIndexColorSensor.getProximity() > 65) {
             if (match.color == blueBall) {
                 return Ball.BLUE;
             } else if (match.color == redBall) {
@@ -197,6 +233,28 @@ public class Index extends SubsystemBase {
                 + " : " +
                 backIndexColorSensor.getProximity());
     }
+
+    public double getLeftDistanceTraveled() {
+        return (getLeftEncoderPos() * (Constants.indexRadius * 2 * Math.PI));
+    }
+
+    public double getRightDistanceTraveled() {
+        return (getRightEncoderPos() * (Constants.indexRadius * 2 * Math.PI));
+    }
+
+    public double getLeftEncoderPos() {
+        return (m_leftEncoder.getPosition() - leftEncoderZero) / Constants.indexGearRatio;
+    }
+
+    public double getRightEncoderPos() {
+        return (m_rightEncoder.getPosition() - rightEncoderZero) / Constants.indexGearRatio;
+    }
+
+    public void resetEncoders() {
+        leftEncoderZero = m_leftEncoder.getPosition();
+        rightEncoderZero = m_rightEncoder.getPosition();
+    }
+
 
 }
 

@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -12,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.MotorDirections;
+import frc.robot.TrackDistance;
 
 public class Shooter extends SubsystemBase {
 
@@ -25,7 +29,13 @@ public class Shooter extends SubsystemBase {
 
     
     private boolean targetGoal = true;
-    private double targetSpeed = 4500;
+    private double targetSpeed = 4500;//4500
+
+    private NetworkTableEntry targetRpm = Shuffleboard.getTab("TeleOp")
+            .addPersistent("Target Shooter Wheel RPM", 0)
+            .withWidget(BuiltInWidgets.kNumberSlider)
+            .withProperties(Map.of("min", 2000, "max", 5000))
+            .getEntry();
 
     private double shooterPower = 65;
 
@@ -62,13 +72,56 @@ public class Shooter extends SubsystemBase {
 
     }
 
+    public boolean isShooterOn(){
+        if(shooterMaster.get() != 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public void resetPID() {
         pid.reset();
     }
 
-    public void enablae(){
+    public void enableAuto(){
+
+    }
+
+    public double getRPM(){
+        double rpm;
+        if(targetGoal){
+            double distance = TrackDistance.getDistance();
+            if((distance > 250) || (distance < 90)){
+                distance = 134;
+            }
+            rpm = 15*(Math.pow(distance, 1)) + 2415*(Math.pow(distance, 0));
+        }else{
+            rpm = 2000;
+        }
+
+        return rpm;
+    }
+
+    public void enablenotuse(){
         shooterMaster.set(0.65);
         shooterSlave.set(0.65);
+    }
+
+    public void idle(){
+        double power = MathUtil.clamp((pid.calculate(Math.abs(wheelSpeed.getDouble(0)), 2000)), -1, 1);
+
+        shooterMaster.set(power);
+        shooterSlave.set(power);
+    }
+
+    public void enableAutoAdjust() {
+        // double power = MathUtil.clamp((pid.calculate(wheelSpeed.getDouble(0) +
+        // feedforward.calculate(targetSpeed), targetSpeed)), -1, 1);
+        double power = MathUtil.clamp((pid.calculate(Math.abs(wheelSpeed.getDouble(0)), getRPM())), -1, 1);
+
+        shooterMaster.set(power);
+        shooterSlave.set(power);
     }
 
     public void enable() {
@@ -96,6 +149,7 @@ public class Shooter extends SubsystemBase {
     public void stop() {
         shooterMaster.set(0);
         shooterSlave.set(0);
+        //idle();
     }
 
     public void setShooter(double speed) {

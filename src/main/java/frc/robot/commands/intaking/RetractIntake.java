@@ -21,7 +21,7 @@ public class RetractIntake extends CommandBase{
     }
 
     public void execute(){
-        m_deployer.setDeployerSpeed(-0.3);
+        m_deployer.setDeployerSpeed(-0.15);
     }
 
 

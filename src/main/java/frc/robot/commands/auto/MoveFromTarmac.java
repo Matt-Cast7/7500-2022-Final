@@ -13,7 +13,7 @@ public class MoveFromTarmac extends CommandBase{
     }
 
     public void execute(){
-        m_DriveTrain.driveDistance(-48, 0.25);
+        m_DriveTrain.driveDistance(-24, 0.25);
     }
 
     public boolean isFinished(){
