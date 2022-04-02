@@ -95,7 +95,7 @@ public class Shooter extends SubsystemBase {
             if((distance > 250) || (distance < 90)){
                 distance = 134;
             }
-            rpm = 15*(Math.pow(distance, 1)) + 2415*(Math.pow(distance, 0));
+            rpm = 15*(Math.pow(distance, 1)) + 2390*(Math.pow(distance, 0));
         }else{
             rpm = 2000;
         }
@@ -183,7 +183,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setLowGoal() {
-        targetSpeed = 2100;
+        targetSpeed = 2000;
         targetGoal = false;
         shooterPower = 45;
         System.out.println("Low Goal");

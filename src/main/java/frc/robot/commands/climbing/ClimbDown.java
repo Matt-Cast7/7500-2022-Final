@@ -14,7 +14,7 @@ public class ClimbDown extends CommandBase{
 
     @Override
     public void execute(){
-        m_Climber.setClimber( -0.35, -0.35);
+        m_Climber.setClimber( 0.5, 0.5);
     }
 
     @Override

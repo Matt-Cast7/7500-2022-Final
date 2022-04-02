@@ -1,5 +1,6 @@
 package frc.robot.commands.auto;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -13,11 +14,14 @@ public class AdjustRotation extends CommandBase {
     private Timer cutOffTimer;
     private DoubleSupplier tx;
 
+    private BooleanSupplier toggle;
+
     private double trackKP = 0.05;
     private double minCommand = 0.1;
 
-    public AdjustRotation(DriveTrain m_DriveTrain) {
+    public AdjustRotation(DriveTrain m_DriveTrain, BooleanSupplier toggle) {
         this.m_DriveTrain = m_DriveTrain;
+        this.toggle = toggle;
         cutOffTimer = new Timer();
         tx = () -> {
             return -NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
@@ -32,17 +36,22 @@ public class AdjustRotation extends CommandBase {
 
     @Override
     public void execute() {
-        m_DriveTrain.set(-adjustmentPower(), adjustmentPower());
-        //System.out.println(adjustmentPower());
+        if(toggle.getAsBoolean()){
+            m_DriveTrain.set(-adjustmentPower(), adjustmentPower());
+        }
+        
     }
 
     public double adjustmentPower() {
         double power = 0;
 
-        if (tx.getAsDouble() > 1.0) {
-            power = trackKP * tx.getAsDouble() - minCommand;
-        } else if (tx.getAsDouble() < 1.0) {
-            power = trackKP * tx.getAsDouble() + minCommand;
+        double txVal = tx.getAsDouble() - 2;
+
+
+        if (txVal > 1.0) {
+            power = trackKP * txVal - minCommand;
+        } else if (txVal < 1.0) {
+            power = trackKP * txVal + minCommand;
         }
 
         return power;

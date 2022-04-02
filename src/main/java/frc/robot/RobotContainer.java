@@ -61,14 +61,18 @@ public class RobotContainer {
             runDeployer,
             
             autoIndexAdjust,
-            toggleShooter;
+            toggleShooter,
+            
+            enableShooter;
 
     private Joystick m_leftJoystick, m_rightJoystick, buttonBox;
 
     private JoystickButton
             Rtrigger,
             Rbutton2,
+            Rbutton4,
             Rbutton5,
+            Rbutton6,
 
             Lbutton7,
             Lbutton9,
@@ -125,7 +129,7 @@ public class RobotContainer {
         deployIntake = new DeployIntake(m_Deployer);
         retractIntake = new RetractIntake(m_Deployer);
 
-        runShooter = new RunShooter(m_Shooter);
+        runShooter = new RunShooter(m_Shooter, () -> toggle.get());
         primeIndex = new PrimeIndex(m_Index);
 
         fireBall = new Fireball(m_Index);
@@ -140,7 +144,7 @@ public class RobotContainer {
 
         autoIndex = new AutoIndexing(m_Index, m_Shooter);
 
-        autoAim = new AdjustRotation(m_DriveTrain);
+        autoAim = new AdjustRotation(m_DriveTrain, () -> toggle.get());
         autoAdjust = new AdjustRange(m_DriveTrain);
 
         spitBall = new SpitBall(m_Index, m_Shooter);
@@ -153,6 +157,8 @@ public class RobotContainer {
         toggleShooter = new ToggleShooter(m_Shooter);
 
         m_Index.setDefaultCommand(autoIndex);
+
+        enableShooter = new EnableShooter(m_Shooter);
 
         //ParallelCommandGroup highGoal = new ParallelCommandGroup(autoAim, new SequentialCommandGroup(autoIndexAdjust, autoShoot), runShooter);
        // ParallelCommandGroup lowGoal = new ParallelCommandGroup(new SequentialCommandGroup(autoIndexAdjust, autoShoot), runShooter);
@@ -175,15 +181,15 @@ public class RobotContainer {
        //Rbutton2.and(goal).cancelWhenActive(arcadeDrive).whileActiveOnce(highGoal).whenInactive(arcadeDrive);
        //Rbutton2.and(goal).negate().whileActiveOnce(lowGoal);
 
-       Rbutton5.whenPressed(toggleGoal);
+        Rbutton5.whenPressed(toggleGoal);
 
         Lbutton9.whenPressed(autoIndexAdjust);  
         
-        Lbutton11.whenHeld(climbDown);
-        Lbutton12.whenHeld(climbUp);
+        Lbutton11.or(Rbutton4).whileActiveOnce(climbDown);
+        Lbutton12.or(Rbutton6).whileActiveOnce(climbUp);
 
         //SequentialCommandGroup primmingGroup = new SequentialCommandGroup(primeIndex, runShooter);
-        green.toggleWhenPressed(runShooter);
+        green.toggleWhenPressed(enableShooter);
 
         red.whenPressed(primeIndex);
 
@@ -267,7 +273,9 @@ public class RobotContainer {
     public void configureButtons() {
         Rtrigger = new JoystickButton(m_rightJoystick, 1);
         Rbutton2 = new JoystickButton(m_rightJoystick, 2);
+        Rbutton4 = new JoystickButton(m_rightJoystick, 4);
         Rbutton5 = new JoystickButton(m_rightJoystick, 5);
+        Rbutton6 = new JoystickButton(m_rightJoystick, 6);
 
         Lbutton7 = new JoystickButton(m_leftJoystick, 7);
         Lbutton9 = new JoystickButton(m_leftJoystick, 9);
